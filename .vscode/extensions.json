@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "vmware.vscode-boot-dev-pack",
+        "mathiasfrohlich.kotlin",
+        "ms-azuretools.vscode-docker",
+        "ms-kubernetes-tools.vscode-kubernetes-tools"
+    ]
+}
