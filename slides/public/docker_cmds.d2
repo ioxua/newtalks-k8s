@@ -1,0 +1,53 @@
+direction: right
+
+classes: {
+  d-run: {
+    style: {
+      stroke: red
+    }
+  }
+  d-build: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+  d-pull: {
+    style: {
+      stroke-dash: 2
+      stroke: orange
+    }
+  }
+}
+
+c: Client {
+  run: docker run
+  build: docker build
+  pull: docker pull
+}
+h: Docker Host {
+  dae: Daemon
+  img: Images {
+    a: python:3.8
+    b: redis:2.2
+    c: npm:lts
+  }
+  cnt: Containers {
+    a: prj-1-backend
+    b: prj-1-frontend
+    c: prj-1-cache
+  }
+}
+r: Registry {
+  d: Docker Hub
+  g: Github Container Registry
+  e: ...
+}
+c.run -> h.dae -> h.img -> h.cnt: '' {
+  class: d-run
+}
+c.build -> h.dae: '' {
+  class: d-build
+}
+c.pull -> h.dae -> r.g -> h.img: '' {
+  class: d-pull
+}

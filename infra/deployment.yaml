@@ -8,7 +8,8 @@ metadata:
   labels:
     app: demo-app
 spec:
-  replicas: 3
+  # best used WITHOUT HPA
+  # replicas: 3
   selector:
     matchLabels:
       app: demo-app
@@ -19,13 +20,18 @@ spec:
     spec:
       containers:
       - name: newtalks-k8s-backend
-        image: ghcr.io/ioxua/newtalk-k8s-demo:latest-amd64
+        image: ghcr.io/ioxua/newtalk-k8s-demo:latest
         env:
           - name: API_URL
             valueFrom:
               configMapKeyRef:
                 name: demo-configmap
                 key: app_uri
+          - name: MY_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: demo-secrets
+                key: my-secret-key
         ports:
         - containerPort: 8080
           name: http-port
@@ -59,6 +65,32 @@ kind: ConfigMap
 metadata:
   name: demo-configmap
 data:
-  app_uri: "https://pokeapi.co/api/"
+  app_uri: "https://pokeapi.co/api/v2/"
 ---
-# see https://kubernetes.io/docs/concepts/configuration/secret/
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: demo-secrets
+# data:
+#   my-secret-key: a very secret string
+# ---
+# see https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#example
+# apiVersion: batch/v1
+# kind: CronJob
+# metadata:
+#   name: hello
+# spec:
+#   schedule: "* * * * *" # every minute
+#   jobTemplate:
+#     spec:
+#       template:
+#         spec:
+#           containers:
+#           - name: hello
+#             image: busybox:1.28
+#             imagePullPolicy: IfNotPresent
+#             command:
+#             - /bin/sh
+#             - -c
+#             - date; echo Hello from the Kubernetes cluster
+#           restartPolicy: OnFailure

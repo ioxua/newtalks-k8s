@@ -1,433 +1,342 @@
 ---
-theme: seriph
-background: https://source.unsplash.com/collection/94734566/1920x1080
+# theme: seriph
+theme: apple-basic
+background: https://source.unsplash.com/oA7MMRxTVzo/1920x1080
 class: text-center
 highlighter: shiki
-lineNumbers: false
-info: |
-  ## Slidev Starter Template
-  Presentation slides for developers.
-
-  Learn more at [Sli.dev](https://sli.dev)
+lineNumbers: true
 drawings:
   persist: false
 transition: slide-left
-title: Welcome to Slidev
+# title: Escalando aplicações com K8S e mais!
 mdc: true
+
+# see https://sli.dev/builtin/layouts.html#default
+hideInToc: true
+layout: intro
 ---
+# Subindo aplicações escaláveis em produção
 
-# Welcome to Slidev
+Uma curta introdução a Docker, Kubernetes e Terraform
 
-Presentation slides for developers
-
-<div class="pt-12">
+<!-- <div class="pt-12">
   <span @click="$slidev.nav.next" class="px-2 py-1 rounded cursor-pointer" hover="bg-white bg-opacity-10">
-    Press Space for next page <carbon:arrow-right class="inline"/>
+    Pressione <kbd>Espaço</kbd> <carbon:arrow-right class="inline"/>
+  </span>
+</div> -->
+
+<div class="absolute bottom-10">
+  <span class="font-700">
+    Com Yehoshua Oliveira
   </span>
 </div>
 
 <div class="abs-br m-6 flex gap-2">
-  <button @click="$slidev.nav.openInEditor()" title="Open in Editor" class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
-    <carbon:edit />
-  </button>
-  <a href="https://github.com/slidevjs/slidev" target="_blank" alt="GitHub"
+  <a href="https://github.com/ioxua/newtalks-k8s" target="_blank" alt="GitHub"
     class="text-xl slidev-icon-btn opacity-50 !border-none !hover:text-white">
     <carbon-logo-github />
   </a>
 </div>
 
-<!--
-The last comment block of each slide will be treated as slide notes. It will be visible and editable in Presenter Mode along with the slide. [Read more in the docs](https://sli.dev/guide/syntax.html#notes)
--->
-
----
-transition: fade-out
----
-
-# What is Slidev?
-
-Slidev is a slides maker and presenter designed for developers, consist of the following features
-
-- 📝 **Text-based** - focus on the content with Markdown, and then style them later
-- 🎨 **Themable** - theme can be shared and used with npm packages
-- 🧑‍💻 **Developer Friendly** - code highlighting, live coding with autocompletion
-- 🤹 **Interactive** - embedding Vue components to enhance your expressions
-- 🎥 **Recording** - built-in recording and camera view
-- 📤 **Portable** - export into PDF, PNGs, or even a hostable SPA
-- 🛠 **Hackable** - anything possible on a webpage
-
-<br>
-<br>
-
-Read more about [Why Slidev?](https://sli.dev/guide/why)
-
-<!--
-You can have `style` tag in markdown to override the style for the current page.
-Learn more: https://sli.dev/guide/syntax#embedded-styles
--->
-
-<style>
-h1 {
-  background-color: #2B90B6;
-  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
-  background-size: 100%;
-  -webkit-background-clip: text;
-  -moz-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -moz-text-fill-color: transparent;
-}
-</style>
-
-<!--
-Here is another comment.
--->
-
----
-layout: default
----
-
-# Table of contents
-
-```html
-<Toc minDepth="1" maxDepth="1"></Toc>
-```
-
-<Toc maxDepth="1"></Toc>
-
----
-transition: slide-up
-level: 2
----
-
-# Navigation
-
-Hover on the bottom-left corner to see the navigation's controls panel, [learn more](https://sli.dev/guide/navigation.html)
-
-### Keyboard Shortcuts
-
-|     |     |
-| --- | --- |
-| <kbd>right</kbd> / <kbd>space</kbd>| next animation or slide |
-| <kbd>left</kbd>  / <kbd>shift</kbd><kbd>space</kbd> | previous animation or slide |
-| <kbd>up</kbd> | previous slide |
-| <kbd>down</kbd> | next slide |
-
-<!-- https://sli.dev/guide/animations.html#click-animations -->
-<img
-  v-click
-  class="absolute -bottom-9 -left-7 w-80 opacity-50"
-  src="https://sli.dev/assets/arrow-bottom-left.svg"
-/>
-<p v-after class="absolute bottom-23 left-45 opacity-30 transform -rotate-10">Here!</p>
-
 ---
 layout: image-right
-image: https://source.unsplash.com/collection/94734566/1920x1080
+image: '/ioxua.br.svg'
+backgroundSize: contain
 ---
 
-# Code
+# Quem?
 
-Use code snippets and get the highlighting directly![^1]
+- Ex-sócio da NewGo, agora Arquiteto Corporativo na GOL;
+- ~6 anos de desenvolvimento;
+- Leciona um [Curso de Verão no IME][verao-ime];
+- Formando em ADS na Fatec MC;
+- [ioxua.com][auto-promotion]
 
-```ts {all|2|1-6|9|all}
-interface User {
-  id: number
-  firstName: string
-  lastName: string
-  role: string
-}
+[verao-ime]: https://www.ime.usp.br/verao/index.php
+[auto-promotion]: https://ioxua.com
 
-function updateUser(id: number, update: User) {
-  const user = getUser(id)
-  const newUser = { ...user, ...update }
-  saveUser(id, newUser)
+---
+
+# Nosso boneco de testes
+
+* Um microsserviço Spring + Kotlin;
+* Spring Actuator para que possamos simular quebras;
+
+```kotlin {all|3|1-2|4-5|6-7|10-16|all}
+@RestController
+@RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
+class DemoController {
+  @GetMapping("/")
+  fun index(@RequestParam(value = "name", required = false) name: String?): Map<String, String> {
+    val value = name ?: "world"
+    return mapOf("message" to "Hello, $name!")
+  }
+
+  @GetMapping("/env")
+  fun env(): Map<String, String> {
+    return mapOf(
+      "mySecret" to System.getenv("MY_SECRET"),
+      "apiUrl" to System.getenv("API_URL"),
+    )
+  }
 }
 ```
 
-<arrow v-click="[3, 4]" x1="400" y1="420" x2="230" y2="330" color="#564" width="3" arrowSize="1" />
-
-[^1]: [Learn More](https://sli.dev/guide/syntax.html#line-highlighting)
+---
 
 <style>
-.footnotes-sep {
-  @apply mt-20 opacity-10;
-}
-.footnotes {
-  @apply text-sm opacity-75;
-}
-.footnote-backref {
-  display: none;
-}
+  .slidev-layout li ul {
+    margin: 0;
+  }
 </style>
 
+# Docker?
+
+- Uma plataforma de _conteinerização_;
+- [Arquitetura][docker-arch]
+- Open Source + soluções cloud:
+  - Docker Hub
+  - Docker Pro
+- Alternativas: [Podman][podman], [Buildah][buildah], entre outros
+
+## O contêiner
+
+- "pacote de software com todas as dependências necessárias para executar uma aplicação"
+- [Não são máquinas virtuais][cont-vs-virt]
+- Dockerfile -> imagem (imutável, versionada) -> contêiner
+- Container Registry
+
+[docker-arch]:https://docs.docker.com/get-started/overview/#docker-architecture
+[buildah]: https://github.com/containers/buildah/tree/main
+[podman]: https://podman.io/
+[cont-vs-virt]: https://www.aquasec.com/cloud-native-academy/docker-container/containerization-101/
+
 ---
 
-# Components
+# Dockerfile
 
-<div grid="~ cols-2 gap-4">
-<div>
+- a.k.a. [Containerfile][open-cont-init]
+- [Referência][dockerfile-ref]
 
-You can use Vue components directly inside your slides.
-
-We have provided a few built-in components like `<Tweet/>` and `<Youtube/>` that you can use directly. And adding your custom components is also super easy.
-
-```html
-<Counter :count="10" />
+```dockerfile {all|2|3|4|5|all}
+# app/Dockerfile
+FROM openjdk:20-ea-4-jdk
+COPY build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
+RUN ["echo", "-n", "'arbitrary commands'"]
+ENTRYPOINT ["java", "-jar", "/app.jar"]
 ```
 
-<!-- ./components/Counter.vue -->
-<Counter :count="10" m="t-4" />
+[dockerfile-ref]: https://docs.docker.com/engine/reference/builder/
+[open-cont-init]: https://opencontainers.org/
 
-Check out [the guides](https://sli.dev/builtin/components.html) for more.
+---
+layout: image
+image: /docker_cmds.svg
+backgroundSize: contain
+---
+---
+hideInToc: true
+---
 
-</div>
-<div>
+# Demonstração 1
 
-```html
-<Tweet id="1390115482657726468" />
+```shell {all|1|2|3|4|all}
+cd app && ./gradlew clean build
+docker build -t meu-app:latest
+docker push meu-app:latest
+ssh <ip-servidor> && docker run -p 8080:8080 -it meu-app:latest
 ```
 
-<Tweet id="1390115482657726468" scale="0.65" />
-
-</div>
-</div>
-
-<!--
-Presenter note with **bold**, *italic*, and ~~striked~~ text.
-
-Also, HTML elements are valid:
-<div class="flex w-full">
-  <span style="flex-grow: 1;">Left content</span>
-  <span>Right content</span>
-</div>
--->
-
-
 ---
-class: px-20
+hideInToc: true
 ---
 
-# Themes
+# O que temos até agora
 
-Slidev comes with powerful theming support. Themes can provide styles, layouts, components, or even configurations for tools. Switching between themes by just **one edit** in your frontmatter:
-
-<div grid="~ cols-2 gap-2" m="-t-2">
-
-```yaml
----
-theme: default
----
-```
-
-```yaml
----
-theme: seriph
----
-```
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-default/01.png?raw=true">
-
-<img border="rounded" src="https://github.com/slidevjs/themes/blob/main/screenshots/theme-seriph/01.png?raw=true">
-
-</div>
-
-Read more about [How to use a theme](https://sli.dev/themes/use.html) and
-check out the [Awesome Themes Gallery](https://sli.dev/themes/gallery.html).
+- Aplicação conteinerizada, porém gerenciada manualmente;
+- Melhorias possíveis:
+  - Escalonamento;
+  - Resiliência;
+  - Infraestrutura adicional: Load balancers, por exemplo.
+- De forma geral, _orquestração_.
 
 ---
-preload: false
 ---
 
-# Animations
+# Kubernetes (K8s)
 
-Animations are powered by [@vueuse/motion](https://motion.vueuse.org/).
+- Uma plataforma open source para gerenciamento de aplicações e serviços _conteinerizados_
+- Funcionalidades:
+  - Escalonamento;
+  - Resiliência;
+  - Infraestrutura adicional (em cloud);
+  - Segredos;
+  - Configuração chave-valor;
+  - _Jobs_ efêmeros.
+  - Extensível a partir da implementação de [Controladores][k8s-ctrl] e [Recursos Customizados][k8s-cust-res]:
+    - [Deploy Blue/Green ou Canary com Argo Rollouts][argo-rollouts]
+    - [Gerenciamento automatizado de certificados com Cert Manager][k8s-cert-mang]
+    - [E mais][awesome-k8s-res]
 
-```html
-<div
-  v-motion
-  :initial="{ x: -80 }"
-  :enter="{ x: 0 }">
-  Slidev
-</div>
-```
+[awesome-k8s-res]: https://github.com/tomhuang12/awesome-k8s-resources
+[k8s-cert-mang]: https://cert-manager.io/
+[k8s-cust-res]: https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/
+[k8s-ctrl]: https://kubernetes.io/docs/concepts/architecture/controller/
+[argo-rollouts]: https://argoproj.github.io/argo-rollouts/
 
-<div class="w-60 relative mt-6">
-  <div class="relative w-40 h-40">
-    <img
-      v-motion
-      :initial="{ x: 800, y: -100, scale: 1.5, rotate: -50 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-square.png"
-    />
-    <img
-      v-motion
-      :initial="{ y: 500, x: -100, scale: 2 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-circle.png"
-    />
-    <img
-      v-motion
-      :initial="{ x: 600, y: 400, scale: 2, rotate: 100 }"
-      :enter="final"
-      class="absolute top-0 left-0 right-0 bottom-0"
-      src="https://sli.dev/logo-triangle.png"
-    />
-  </div>
+---
+layout: image
+image: /k8s_components.svg
+backgroundSize: contain
+---
 
-  <div
-    class="text-5xl absolute top-14 left-40 text-[#2B90B6] -z-1"
-    v-motion
-    :initial="{ x: -80, opacity: 0}"
-    :enter="{ x: 0, opacity: 1, transition: { delay: 2000, duration: 1000 } }">
-    Slidev
-  </div>
-</div>
-
-<!-- vue script setup scripts can be directly used in markdown, and will only affects current page -->
-<script setup lang="ts">
-const final = {
-  x: 0,
-  y: 0,
-  rotate: 0,
-  scale: 1,
-  transition: {
-    type: 'spring',
-    damping: 10,
-    stiffness: 20,
-    mass: 2
-  }
-}
-</script>
-
-<div
-  v-motion
-  :initial="{ x:35, y: 40, opacity: 0}"
-  :enter="{ y: 0, opacity: 1, transition: { delay: 3500 } }">
-
-[Learn More](https://sli.dev/guide/animations.html#motion)
-
+<div class="absolute bottom-10">
+  <a href="https://kubernetes.io/docs/concepts/overview/">
+    Fonte
+  </a>
 </div>
 
 ---
+---
 
-# LaTeX
+## O Cluster
 
-LaTeX is supported out-of-box powered by [KaTeX](https://katex.org/).
+- Pode ser configurado manualmente com [kubeadm][kubeadm]
+- Ou provisionado automaticamente em (quase) qualquer provedor cloud:
 
-<br>
+|**Provedor**|**Serviço**|**Abrev.**|
+|:--|:--|:--|
+|Microsoft Azure|Azure K8s Services|[AKS][aks]|
+|Amazon Web Services|Elastic K8s Service|[EKS][eks]|
+|Oracle Cloud Infrastructure|Container Engine for K8s|[OKE][oke]|
+|Google Cloud|Google K8s Engine|[GKE][gke]|
+|DigitalOcean|DigitalOcean K8s|[DOKS][doks]|
+|IBM Cloud|K8s Service|[IBMKS][ibm-k8s]|
 
-Inline $\sqrt{3x-1}+(1+x)^2$
+[gke]: https://cloud.google.com/kubernetes-engine
+[oke]: https://www.oracle.com/br/cloud/cloud-native/container-engine-kubernetes/
+[aks]: https://azure.microsoft.com/en-us/products/kubernetes-service
+[doks]: https://www.digitalocean.com/products/kubernetes
+[ibm-k8s]: https://www.ibm.com/cloud/kubernetes-service
+[eks]: https://aws.amazon.com/kubernetes/
+[kubeadm]: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/
 
-Block
-$$ {1|3|all}
-\begin{array}{c}
+---
+hideInToc: true
+---
 
-\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} &
-= \frac{4\pi}{c}\vec{\mathbf{j}}    \nabla \cdot \vec{\mathbf{E}} & = 4 \pi \rho \\
+## O Cluster (cont.)
 
-\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t} & = \vec{\mathbf{0}} \\
+- Pode-se interagir via API ou CLI ([kubectl][kubectl]);
+- Clusters locais: [Kind][kind-k8s] ou [Minikube][minikube];
+- [Cada cluster pode emitir um arquivo][kubeconf] `kubeconfig.yaml`:
+  - `~/.kube/config`
+  - Variável de ambiente: `$KUBECONFIG`
+  - Flag `--kubeconfig`
+- Elementos configuráveis:
+  - [Controladores][kube-ctrl] (responsáveis por manter o estado desejado do cluster)
+  - [Recursos][kube-res] (determinam o estado desejado do cluster em arquivos YAML):
+    - [Pods][k8s-pods];
+    - [Services][k8s-services];
+    - [Deployments][k8s-depl];
+    - [Jobs/Cronjobs][k8s-job].
 
-\nabla \cdot \vec{\mathbf{B}} & = 0
-
-\end{array}
-$$
-
-<br>
-
-[Learn more](https://sli.dev/guide/syntax#latex)
+[k8s-job]: https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+[k8s-depl]: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+[k8s-pods]: https://kubernetes.io/docs/concepts/workloads/
+[k8s-services]: https://kubernetes.io/docs/concepts/services-networking/
+[kind-k8s]: https://kind.sigs.k8s.io/
+[minikube]: https://minikube.sigs.k8s.io/docs/start/
+[kube-res]: https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/#organizing-resource-configurations
+[kube-ctrl]: https://kubernetes.io/docs/concepts/architecture/controller/
+[kubeconf]: https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/
+[kubectl]: https://kubernetes.io/docs/tasks/tools/
 
 ---
 
-# Diagrams
-
-You can create diagrams / graphs from textual descriptions, directly in your Markdown.
-
-<div class="grid grid-cols-4 gap-5 pt-4 -mb-6">
-
-```mermaid {scale: 0.5}
-sequenceDiagram
-    Alice->John: Hello John, how are you?
-    Note over Alice,John: A typical interaction
+```yaml {all|3|4-5|7|11-20|21-22|all}
+# meu-recurso.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: demo-simple-pod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demo-app
+  template:
+    metadata: { labels: { app: { demo-app } } }
+    spec:
+      containers:
+      - name: newtalks-k8s-backend
+        image: ghcr.io/ioxua/newtalk-k8s-demo:latest
+        resources:
+          requests: { memory: 100Mi, cpu: 250m }
+          limits: { memory: 200Mi, cpu: 500m }
+        ports: [{ containerPort: 8080 }]
+# ---
+# outro recurso poderia estar aqui
 ```
 
-```mermaid {theme: 'neutral', scale: 0.8}
-graph TD
-B[Text] --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
-```
+---
+---
 
-```mermaid
-mindmap
-  root((mindmap))
-    Origins
-      Long history
-      ::icon(fa fa-book)
-      Popularisation
-        British popular psychology author Tony Buzan
-    Research
-      On effectivness<br/>and features
-      On Automatic creation
-        Uses
-            Creative techniques
-            Strategic planning
-            Argument mapping
-    Tools
-      Pen and paper
-      Mermaid
-```
+# Terraform
 
-```plantuml {scale: 0.7}
-@startuml
+- Ferramenta de infraestrutura-como-código;
+- Utiliza a linguagem [HCL][hcl]
+- Módulos terceiros para uma [GRANDE variedade de provedores][tf-providers]:
+- +git provê versionamento, auditoria e governança;
+- [Referência][tf-ref]
 
-package "Some Group" {
-  HTTP - [First Component]
-  [Another Component]
+[hcl]: https://github.com/hashicorp/hcl
+[tf-providers]: https://registry.terraform.io/browse/providers
+[tf-ref]: https://developer.hashicorp.com/terraform/cli
+---
+layout: image
+image: /terraform_ov.svg
+backgroundSize: contain
+---
+---
+---
+
+```hcl {all|2-4|6-9|all}
+# main.tf
+provider "azurerm" {
+  features {}
 }
 
-node "Other Groups" {
-  FTP - [Second Component]
-  [First Component] --> FTP
+resource "azurerm_resource_group" "demo-res" {
+  name     = "newtalks-k8s-demo-resources"
+  location = "Brazil South"
 }
-
-cloud {
-  [Example 1]
-}
-
-
-database "MySql" {
-  folder "This is my folder" {
-    [Folder 3]
-  }
-  frame "Foo" {
-    [Frame 4]
-  }
-}
-
-
-[Another Component] --> [Example 1]
-[Example 1] --> [Folder 3]
-[Folder 3] --> [Frame 4]
-
-@enduml
 ```
 
-</div>
-
-[Learn More](https://sli.dev/guide/syntax.html#diagrams)
-
 ---
-src: ./pages/multiple-entries.md
-hide: false
 ---
 
----
-layout: center
-class: text-center
+# Demonstração 2
+
+```shell {all|1|2|3|4|5|all}
+terraform init
+terraform plan
+terraform apply
+terraform output -raw kube_config > ./kubeconfig.yaml
+kubectl apply -f simple-pod.yaml --kubeconfig ./kubeconfig.yaml
+```
+
 ---
 
-# Learn More
+# Leituras recomendadas
 
-[Documentations](https://sli.dev) · [GitHub](https://github.com/slidevjs/slidev) · [Showcases](https://sli.dev/showcases.html)
+- [Kubernetes sem Docker? – Entendendo OCI, CRI e o ecossistema de containers][[lsantos-ecosystem](https://blog.lsantos.dev/oci-cri-docker-ecossistema-de-containers/)];
+- [K8s concepts](https://kubernetes.io/docs/concepts/);
+- [Aquasec CNW: What is a container?](https://www.aquasec.com/cloud-native-academy/docker-container/what-is-a-container/);
+- [Azure Kubernetes Series](https://apgapg.medium.com/azure-kubernetes-part-1-deploy-an-image-f36fe76c99f7);
+
+---
+layout: cover
+---
+
+# Obrigado :D

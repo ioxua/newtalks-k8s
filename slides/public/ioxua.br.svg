@@ -9,5 +9,8 @@
                 stroke: white;
             }
         }
+        .ioxua-logo {
+            transform: scale(.75)
+        }
     </style>
 </svg>

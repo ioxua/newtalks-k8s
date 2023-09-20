@@ -12,7 +12,7 @@
 
 ### Cloud
 
-1. Você pode usar um cluster provisionado em cloud (Azure, [AWS][eks], [Oracle][oke], [Google][gke], [DigitalOcean][doks], **[Azure][aks]**, [IBM][ibm-k8s]) ou [criar um cluster manualmente][kubeadm-cluster]
+1. Você pode usar um cluster provisionado em cloud ([AWS][eks], [Oracle][oke], [Google][gke], [DigitalOcean][doks], **[Azure][aks]**, [IBM][ibm-k8s]) ou [criar um cluster manualmente][kubeadm-cluster]
 2. [Azure CLI][azure-cli]
 
 ## Por que usar a Azure Kubernetes Service (AKS)?
@@ -28,6 +28,7 @@ Dentre as cloud alternativas, é a única que não tem taxa de administração (
 * [K8s services][k8s-services]
   * [more here](https://cloud.google.com/kubernetes-engine/docs/how-to/exposing-apps)
 * [Azure K8s series](https://apgapg.medium.com/azure-kubernetes-part-2-expose-a-service-to-outside-world-54319dc39460)
+* [Kubectl cheatsheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/#updating-resources)
 
 ## Notas
 
