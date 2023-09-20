@@ -58,6 +58,8 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: http-port
+    # targetPort: 8080
+
 ---
 # see https://kubernetes.io/docs/concepts/configuration/configmap/#configmaps-and-pods
 apiVersion: v1
