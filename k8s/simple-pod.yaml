@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
   - name: backend
-    image: i-k8s-demo-img:latest
+    image: ghcr.io/ioxua/newtalk-k8s-demo:latest
     ports:
     - containerPort: 8080
     resources:

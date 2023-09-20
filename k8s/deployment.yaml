@@ -1,0 +1,64 @@
+# See https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment
+
+# pod lifecycle!
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-deployment
+  labels:
+    app: demo-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demo-app
+  template:
+    metadata:
+      labels:
+        app: demo-app
+    spec:
+      containers:
+      - name: newtalks-k8s-backend
+        image: ghcr.io/ioxua/newtalk-k8s-demo:latest-amd64
+        env:
+          - name: API_URL
+            valueFrom:
+              configMapKeyRef:
+                name: demo-configmap
+                key: app_uri
+        ports:
+        - containerPort: 8080
+          name: http-port
+
+        # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+        # https://sysdig.com/blog/kubernetes-limits-requests/
+        resources:
+          requests:
+            memory: 100Mi
+            cpu: 250m
+          limits:
+            memory: 600Mi
+            cpu: 750m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-app-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: demo-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: http-port
+---
+# see https://kubernetes.io/docs/concepts/configuration/configmap/#configmaps-and-pods
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo-configmap
+data:
+  app_uri: "https://pokeapi.co/api/"
+---
+# see https://kubernetes.io/docs/concepts/configuration/secret/
